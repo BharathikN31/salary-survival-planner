@@ -1,9 +1,6 @@
 package com.salaryplanner.salary_survival_planner.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import java.math.BigDecimal;
@@ -25,4 +22,8 @@ public class FinancialCommitment {
     private LocalDate dueDate;
     private Boolean recurring;
     private LocalDateTime createdAt;
+    @PrePersist
+    public void onCreate() {
+        createdAt = LocalDateTime.now();
+    }
 }

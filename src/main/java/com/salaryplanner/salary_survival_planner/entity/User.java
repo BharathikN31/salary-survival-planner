@@ -22,6 +22,9 @@ public class User {
     @NotBlank
     private String password;
     private LocalDateTime createdAt;
-
+    @PrePersist
+    public void onCreate() {
+        createdAt = LocalDateTime.now();
+    }
 
 }
