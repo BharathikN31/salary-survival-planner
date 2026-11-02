@@ -2,6 +2,7 @@ package com.salaryplanner.salary_survival_planner.controller;
 
 import com.salaryplanner.salary_survival_planner.entity.Expense;
 import com.salaryplanner.salary_survival_planner.service.ExpenseService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +17,7 @@ public class ExpenseController {
     private ExpenseService expenseService;
 
     @PostMapping
-    public ResponseEntity<Expense> addExpense(@RequestBody Expense newExpense){
+    public ResponseEntity<Expense> addExpense(@Valid @RequestBody Expense newExpense){
         return  new ResponseEntity<>(expenseService.addExpense(newExpense), HttpStatus.CREATED);
     }
 
@@ -42,7 +43,7 @@ public class ExpenseController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Expense> updateExpense(@PathVariable Long id, @RequestBody Expense updateExpense){
+    public ResponseEntity<Expense> updateExpense(@PathVariable Long id,@Valid @RequestBody Expense updateExpense){
         Expense existingExpense =expenseService.getExpenseById(id);
         if(existingExpense !=null){
             return new ResponseEntity<>(expenseService.updateExpense(id,updateExpense),HttpStatus.OK);

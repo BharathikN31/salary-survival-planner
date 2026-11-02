@@ -1,6 +1,7 @@
 package com.salaryplanner.salary_survival_planner.service;
 
 import com.salaryplanner.salary_survival_planner.entity.Salary;
+import com.salaryplanner.salary_survival_planner.exception.ResourceNotFoundException;
 import com.salaryplanner.salary_survival_planner.repository.SalaryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,19 +14,28 @@ public class SalaryService {
     @Autowired
     private SalaryRepository salaryRepository;
 
-    public Salary addSalary(Salary newSalary){
+    public Salary addSalary(Salary newSalary) {
         return salaryRepository.save(newSalary);
     }
 
-    public Salary getSalaryById(Long id){
-        return  salaryRepository.findById(id).orElse(null);
+    public Salary getSalaryById(Long id) {
+        return salaryRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Salary not found with ID: " + id
+                ));
     }
 
-    public List<Salary> getAllSalaries(){
-        return  salaryRepository.findAll();
+    public List<Salary> getAllSalaries() {
+        return salaryRepository.findAll();
     }
 
-    public void deleteSalary(Long id){
-        salaryRepository.deleteById(id);
+    public void deleteSalary(Long id) {
+
+        Salary existingSalary = salaryRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Salary not found with ID: " + id
+                ));
+
+        salaryRepository.delete(existingSalary);
     }
 }

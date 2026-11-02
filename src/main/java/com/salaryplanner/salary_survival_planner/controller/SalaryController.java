@@ -2,6 +2,7 @@ package com.salaryplanner.salary_survival_planner.controller;
 
 import com.salaryplanner.salary_survival_planner.entity.Salary;
 import com.salaryplanner.salary_survival_planner.service.SalaryService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +27,7 @@ public class SalaryController {
     }
 
     @PostMapping
-    public  ResponseEntity<Salary> addSalary(@RequestBody Salary newSalary){
+    public  ResponseEntity<Salary> addSalary(@Valid @RequestBody Salary newSalary){
         return new ResponseEntity<>(salaryService.addSalary(newSalary),HttpStatus.CREATED);
     }
 

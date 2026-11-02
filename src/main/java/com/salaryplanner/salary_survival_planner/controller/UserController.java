@@ -2,6 +2,7 @@ package com.salaryplanner.salary_survival_planner.controller;
 
 import com.salaryplanner.salary_survival_planner.entity.User;
 import com.salaryplanner.salary_survival_planner.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
@@ -28,12 +29,12 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<User> addUser(@RequestBody User newUser){
+    public ResponseEntity<User> addUser(@Valid @RequestBody User newUser){
         return new ResponseEntity<>(userService.registerUser(newUser),HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public  ResponseEntity<User> updateUser(@PathVariable Long id,@RequestBody User modifiedUser){
+    public  ResponseEntity<User> updateUser(@PathVariable Long id,@Valid @RequestBody User modifiedUser){
         return new ResponseEntity<>(userService.updateUserName(id,modifiedUser),HttpStatus.OK);
     }
 

@@ -3,6 +3,7 @@ package com.salaryplanner.salary_survival_planner.controller;
 
 import com.salaryplanner.salary_survival_planner.entity.FinancialCommitment;
 import com.salaryplanner.salary_survival_planner.service.FinancialCommitmentService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +19,7 @@ public class FinancialCommitmentController {
     private FinancialCommitmentService financialCommitmentService;
 
     @PostMapping
-    public ResponseEntity<FinancialCommitment> addCommitment(@RequestBody FinancialCommitment newCommitment){
+    public ResponseEntity<FinancialCommitment> addCommitment(@Valid @RequestBody FinancialCommitment newCommitment){
         return new ResponseEntity<>(financialCommitmentService.addCommitment(newCommitment), HttpStatus.CREATED);
     }
 

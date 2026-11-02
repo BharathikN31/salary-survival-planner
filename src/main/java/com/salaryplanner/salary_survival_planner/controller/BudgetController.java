@@ -2,6 +2,7 @@ package com.salaryplanner.salary_survival_planner.controller;
 
 import com.salaryplanner.salary_survival_planner.entity.Budget;
 import com.salaryplanner.salary_survival_planner.service.BudgetService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +18,7 @@ public class BudgetController {
     private BudgetService budgetService;
 
     @PostMapping
-    public ResponseEntity<Budget> addBudget(@RequestBody Budget newBudget){
+    public ResponseEntity<Budget> addBudget(@Valid @RequestBody Budget newBudget){
         return  new ResponseEntity<>(budgetService.addBudget(newBudget), HttpStatus.CREATED);
     }
 
@@ -43,7 +44,7 @@ public class BudgetController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Budget> updateBudget(@PathVariable Long id, @RequestBody Budget updateBudget){
+    public ResponseEntity<Budget> updateBudget(@PathVariable Long id,@Valid @RequestBody Budget updateBudget){
         Budget existingBudget =budgetService.getBudgetById(id);
         if(existingBudget !=null){
             return new ResponseEntity<>(budgetService.updateBudget(id,updateBudget),HttpStatus.OK);

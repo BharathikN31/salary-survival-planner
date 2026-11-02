@@ -3,6 +3,7 @@ package com.salaryplanner.salary_survival_planner.controller;
 
 import com.salaryplanner.salary_survival_planner.entity.SavingsGoal;
 import com.salaryplanner.salary_survival_planner.service.SavingsGoalService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +19,7 @@ public class SavingsGoalController {
     private SavingsGoalService savingsGoalService;
 
     @PostMapping
-    public ResponseEntity<SavingsGoal> addSavingsGoal(@RequestBody SavingsGoal newGoal){
+    public ResponseEntity<SavingsGoal> addSavingsGoal(@Valid @RequestBody SavingsGoal newGoal){
         return new  ResponseEntity<>(savingsGoalService.addSavingsGoal(newGoal), HttpStatus.CREATED);
     }
 
@@ -45,7 +46,7 @@ public class SavingsGoalController {
     }
 
     @PutMapping("/{id}")
-    public  ResponseEntity<SavingsGoal> updateSavingsGoal(@PathVariable Long id,@RequestBody SavingsGoal modifyGoal){
+    public  ResponseEntity<SavingsGoal> updateSavingsGoal(@PathVariable Long id, @Valid @RequestBody SavingsGoal modifyGoal){
         SavingsGoal existingGoal=savingsGoalService.getSavingsGoalById(id);
 
         if(existingGoal!=null){
