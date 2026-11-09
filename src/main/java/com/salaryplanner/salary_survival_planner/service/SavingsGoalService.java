@@ -14,27 +14,42 @@ public class SavingsGoalService {
     @Autowired
     private SavingsGoalRepository savingsGoalRepository;
 
+    @Autowired
+    private CurrentUserService currentUserService;
+
+    // Add savings goal
     public SavingsGoal addSavingsGoal(SavingsGoal newGoal) {
+
+        Long userId = currentUserService.getCurrentUserId();
+
+        newGoal.setUserId(userId);
+
         return savingsGoalRepository.save(newGoal);
     }
 
+    // Get savings goal by ID
     public SavingsGoal getSavingsGoalById(Long id) {
-        return savingsGoalRepository.findById(id)
+
+        Long userId = currentUserService.getCurrentUserId();
+
+        return savingsGoalRepository.findByIdAndUserId(id, userId)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Savings goal not found with ID: " + id
                 ));
     }
 
+    // Get all savings goals
     public List<SavingsGoal> getAllSavingsGoals() {
-        return savingsGoalRepository.findAll();
+
+        Long userId = currentUserService.getCurrentUserId();
+
+        return savingsGoalRepository.findByUserId(userId);
     }
 
+    // Update savings goal
     public SavingsGoal updateSavingsGoal(Long id, SavingsGoal modifyGoal) {
 
-        SavingsGoal existingGoal = savingsGoalRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Savings goal not found with ID: " + id
-                ));
+        SavingsGoal existingGoal = getSavingsGoalById(id);
 
         existingGoal.setName(modifyGoal.getName());
         existingGoal.setTotalAmount(modifyGoal.getTotalAmount());
@@ -44,12 +59,10 @@ public class SavingsGoalService {
         return savingsGoalRepository.save(existingGoal);
     }
 
+    // Delete savings goal
     public void deleteSavingsGoal(Long id) {
 
-        SavingsGoal existingGoal = savingsGoalRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Savings goal not found with ID: " + id
-                ));
+        SavingsGoal existingGoal = getSavingsGoalById(id);
 
         savingsGoalRepository.delete(existingGoal);
     }

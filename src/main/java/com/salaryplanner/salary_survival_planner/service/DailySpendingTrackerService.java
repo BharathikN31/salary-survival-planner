@@ -35,7 +35,7 @@ public class DailySpendingTrackerService {
         }
 
         BigDecimal safeDailyLimit =
-                financialSummaryService.getFinancialSummary(userId)
+                financialSummaryService.getFinancialSummary()
                         .getSafeDailyLimit();
 
         if (safeDailyLimit == null) {

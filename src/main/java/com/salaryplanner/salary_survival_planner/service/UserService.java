@@ -1,9 +1,12 @@
 package com.salaryplanner.salary_survival_planner.service;
 
 import com.salaryplanner.salary_survival_planner.entity.User;
+import com.salaryplanner.salary_survival_planner.exception.EmailAlreadyExistsException;
 import com.salaryplanner.salary_survival_planner.exception.ResourceNotFoundException;
 import com.salaryplanner.salary_survival_planner.repository.UserRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,7 +17,21 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     public User registerUser(User newUser) {
+
+        if (userRepository.existsByEmail(newUser.getEmail())) {
+            throw new EmailAlreadyExistsException(
+                    "Email is already registered: " + newUser.getEmail()
+            );
+        }
+
+        String encodedPassword = passwordEncoder.encode(newUser.getPassword());
+
+        newUser.setPassword(encodedPassword);
+
         return userRepository.save(newUser);
     }
 

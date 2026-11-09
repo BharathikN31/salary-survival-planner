@@ -1,13 +1,9 @@
+
 package com.salaryplanner.salary_survival_planner.service;
 
 import com.salaryplanner.salary_survival_planner.dto.FinancialSummary;
 import com.salaryplanner.salary_survival_planner.entity.*;
-import com.salaryplanner.salary_survival_planner.repository.SalaryRepository;
-import com.salaryplanner.salary_survival_planner.repository.FinancialCommitmentRepository;
-import com.salaryplanner.salary_survival_planner.repository.ExpenseRepository;
-import com.salaryplanner.salary_survival_planner.repository.BudgetRepository;
-import com.salaryplanner.salary_survival_planner.repository.SavingsGoalRepository;
-
+import com.salaryplanner.salary_survival_planner.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,9 +31,11 @@ public class FinancialSummaryService {
     @Autowired
     private SavingsGoalRepository savingsGoalRepository;
 
+    @Autowired
+    private CurrentUserService currentUserService;
+
     public BigDecimal calculateTotalSalary(Long userId) {
         List<Salary> salaries = salaryRepository.findByUserId(userId);
-
         BigDecimal totalSalary = BigDecimal.ZERO;
 
         for (Salary salary : salaries) {
@@ -48,46 +46,57 @@ public class FinancialSummaryService {
     }
 
     public BigDecimal calculateTotalCommitments(Long userId) {
-        List<FinancialCommitment> commitments = commitmentRepository.findByUserId(userId);
+        List<FinancialCommitment> commitments =
+                commitmentRepository.findByUserId(userId);
+
         BigDecimal totalCommitment = BigDecimal.ZERO;
+
         for (FinancialCommitment commitment : commitments) {
             totalCommitment = totalCommitment.add(commitment.getAmount());
         }
+
         return totalCommitment;
     }
 
     public BigDecimal calculateTotalExpenses(Long userId) {
         List<Expense> expenses = expenseRepository.findByUserId(userId);
         BigDecimal totalExpense = BigDecimal.ZERO;
+
         for (Expense expense : expenses) {
             totalExpense = totalExpense.add(expense.getAmount());
         }
+
         return totalExpense;
     }
 
     public BigDecimal calculateTotalBudgetAllocated(Long userId) {
         List<Budget> budgets = budgetRepository.findByUserId(userId);
         BigDecimal totalBudget = BigDecimal.ZERO;
+
         for (Budget budget : budgets) {
             totalBudget = totalBudget.add(budget.getMonthlyLimit());
         }
+
         return totalBudget;
     }
 
     public BigDecimal calculateTotalInvested(Long userId) {
-        List<SavingsGoal> savingsGoals = savingsGoalRepository.findByUserId(userId);
+        List<SavingsGoal> savingsGoals =
+                savingsGoalRepository.findByUserId(userId);
+
         BigDecimal totalSavings = BigDecimal.ZERO;
+
         for (SavingsGoal savingsGoal : savingsGoals) {
             totalSavings = totalSavings.add(savingsGoal.getInvestedAmount());
         }
+
         return totalSavings;
     }
 
-
     public BigDecimal calculateRemainingBalance(Long userId) {
-
-        BigDecimal remainingBalance =calculateTotalSalary(userId).subtract(calculateTotalCommitments(userId)).subtract(calculateTotalExpenses(userId));
-        return  remainingBalance;
+        return calculateTotalSalary(userId)
+                .subtract(calculateTotalCommitments(userId))
+                .subtract(calculateTotalExpenses(userId));
     }
 
     public BigDecimal calculateSafeDailyLimit(Long userId) {
@@ -105,7 +114,9 @@ public class FinancialSummaryService {
                 2,
                 RoundingMode.DOWN
         );
-    }public Long calculateDaysUntilSalary(Long userId) {
+    }
+
+    public Long calculateDaysUntilSalary(Long userId) {
         List<Salary> salaries = salaryRepository.findByUserId(userId);
 
         if (salaries.isEmpty()) {
@@ -123,10 +134,9 @@ public class FinancialSummaryService {
             return null;
         }
 
-        LocalDate nextSalaryDate = lastSalaryDate.withDayOfMonth(
-                Math.min(lastSalaryDate.getDayOfMonth(),
-                        lastSalaryDate.lengthOfMonth())
-        ).withYear(today.getYear()).withMonth(today.getMonthValue());
+        LocalDate nextSalaryDate = lastSalaryDate
+                .withYear(today.getYear())
+                .withMonth(today.getMonthValue());
 
         if (!nextSalaryDate.isAfter(today)) {
             nextSalaryDate = nextSalaryDate.plusMonths(1);
@@ -135,7 +145,11 @@ public class FinancialSummaryService {
         return ChronoUnit.DAYS.between(today, nextSalaryDate);
     }
 
-    public FinancialSummary getFinancialSummary(Long userId) {
+    public FinancialSummary getFinancialSummary() {
+
+        // Get the logged-in user's ID from JWT authentication
+        Long userId = currentUserService.getCurrentUserId();
+
         FinancialSummary summary = new FinancialSummary();
 
         summary.setUserId(userId);

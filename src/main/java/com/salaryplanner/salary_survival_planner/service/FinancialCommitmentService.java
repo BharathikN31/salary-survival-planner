@@ -14,28 +14,33 @@ public class FinancialCommitmentService {
     @Autowired
     private FinancialCommitmentRepository financialCommitmentRepository;
 
+    @Autowired
+    private CurrentUserService currentUserService;
+
     public FinancialCommitment addCommitment(FinancialCommitment newCommitment) {
+        Long userId = currentUserService.getCurrentUserId();
+
+        newCommitment.setUserId(userId);
+
         return financialCommitmentRepository.save(newCommitment);
     }
 
     public FinancialCommitment getCommitmentById(Long id) {
-        return financialCommitmentRepository.findById(id)
+        Long userId = currentUserService.getCurrentUserId();
+
+        return financialCommitmentRepository.findByIdAndUserId(id, userId)
                 .orElseThrow(() -> new ResourceNotFoundException(
-                        "Financial commitment not found with ID: " + id
-                ));
+                        "Financial commitment not found with ID: " + id));
     }
 
     public List<FinancialCommitment> getAllCommitments() {
-        return financialCommitmentRepository.findAll();
+        Long userId = currentUserService.getCurrentUserId();
+
+        return financialCommitmentRepository.findByUserId(userId);
     }
 
     public void deleteCommitment(Long id) {
-
-        FinancialCommitment existingCommitment =
-                financialCommitmentRepository.findById(id)
-                        .orElseThrow(() -> new ResourceNotFoundException(
-                                "Financial commitment not found with ID: " + id
-                        ));
+        FinancialCommitment existingCommitment = getCommitmentById(id);
 
         financialCommitmentRepository.delete(existingCommitment);
     }

@@ -13,42 +13,59 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/expenses")
 public class ExpenseController {
+
     @Autowired
     private ExpenseService expenseService;
 
+    // Add expense
     @PostMapping
-    public ResponseEntity<Expense> addExpense(@Valid @RequestBody Expense newExpense){
-        return  new ResponseEntity<>(expenseService.addExpense(newExpense), HttpStatus.CREATED);
+    public ResponseEntity<Expense> addExpense(
+            @Valid @RequestBody Expense newExpense) {
+
+        return new ResponseEntity<>(
+                expenseService.addExpense(newExpense),
+                HttpStatus.CREATED
+        );
     }
 
+    // Get expense by ID
     @GetMapping("/{id}")
-    public  ResponseEntity<Expense> getExpenseById(@PathVariable Long id){
-        Expense findExpense=expenseService.getExpenseById(id);
+    public ResponseEntity<Expense> getExpenseById(@PathVariable Long id) {
 
-        if(findExpense!=null){
-            return new ResponseEntity<>(findExpense,HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(
+                expenseService.getExpenseById(id),
+                HttpStatus.OK
+        );
     }
 
+    // Get all expenses
     @GetMapping
-    public ResponseEntity<List<Expense>> getAllExpenses(){
-        return new ResponseEntity<>(expenseService.getAllExpenses(),HttpStatus.OK);
+    public ResponseEntity<List<Expense>> getAllExpenses() {
+
+        return new ResponseEntity<>(
+                expenseService.getAllExpenses(),
+                HttpStatus.OK
+        );
     }
 
+    // Delete expense
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteExpense(@PathVariable Long id){
+    public ResponseEntity<Void> deleteExpense(@PathVariable Long id) {
+
         expenseService.deleteExpense(id);
-        return  new ResponseEntity<>(HttpStatus.NO_CONTENT);
+
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    // Update expense
     @PutMapping("/{id}")
-    public ResponseEntity<Expense> updateExpense(@PathVariable Long id,@Valid @RequestBody Expense updateExpense){
-        Expense existingExpense =expenseService.getExpenseById(id);
-        if(existingExpense !=null){
-            return new ResponseEntity<>(expenseService.updateExpense(id,updateExpense),HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
+    public ResponseEntity<Expense> updateExpense(
+            @PathVariable Long id,
+            @Valid @RequestBody Expense updateExpense) {
 
+        return new ResponseEntity<>(
+                expenseService.updateExpense(id, updateExpense),
+                HttpStatus.OK
+        );
+    }
 }

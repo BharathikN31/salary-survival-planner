@@ -36,7 +36,7 @@ public class FinancialDashboardService {
         dashboard.setUserId(userId);
 
         FinancialSummary summary =
-                financialSummaryService.getFinancialSummary(userId);
+                financialSummaryService.getFinancialSummary();
 
         List<SavingsGoalProgress> savingsGoals =
                 savingsGoalProgressService.getSavingsGoalProgress(userId);

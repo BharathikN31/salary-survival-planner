@@ -14,27 +14,42 @@ public class BudgetService {
     @Autowired
     private BudgetRepository budgetRepository;
 
+    @Autowired
+    private CurrentUserService currentUserService;
+
+    // Add budget
     public Budget addBudget(Budget newBudget) {
+
+        Long userId = currentUserService.getCurrentUserId();
+
+        newBudget.setUserId(userId);
+
         return budgetRepository.save(newBudget);
     }
 
+    // Get budget by ID
     public Budget getBudgetById(Long id) {
-        return budgetRepository.findById(id)
+
+        Long userId = currentUserService.getCurrentUserId();
+
+        return budgetRepository.findByIdAndUserId(id, userId)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Budget not found with ID: " + id
                 ));
     }
 
+    // Get all budgets
     public List<Budget> getAllBudgets() {
-        return budgetRepository.findAll();
+
+        Long userId = currentUserService.getCurrentUserId();
+
+        return budgetRepository.findByUserId(userId);
     }
 
+    // Update budget
     public Budget updateBudget(Long id, Budget modifyBudget) {
 
-        Budget existingBudget = budgetRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Budget not found with ID: " + id
-                ));
+        Budget existingBudget = getBudgetById(id);
 
         existingBudget.setName(modifyBudget.getName());
         existingBudget.setCategory(modifyBudget.getCategory());
@@ -43,12 +58,10 @@ public class BudgetService {
         return budgetRepository.save(existingBudget);
     }
 
+    // Delete budget
     public void deleteBudget(Long id) {
 
-        Budget existingBudget = budgetRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Budget not found with ID: " + id
-                ));
+        Budget existingBudget = getBudgetById(id);
 
         budgetRepository.delete(existingBudget);
     }

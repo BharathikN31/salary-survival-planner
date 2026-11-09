@@ -16,8 +16,6 @@ public class FinancialCommitment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @NotNull(message = "User ID is required")
-    @Positive(message = "User ID must be positive")
     private Long userId;
 
     @NotBlank(message = "Commitment name is required")

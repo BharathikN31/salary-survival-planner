@@ -14,27 +14,42 @@ public class ExpenseService {
     @Autowired
     private ExpenseRepository expenseRepository;
 
+    @Autowired
+    private CurrentUserService currentUserService;
+
+    // Add expense
     public Expense addExpense(Expense newExpense) {
+
+        Long userId = currentUserService.getCurrentUserId();
+
+        newExpense.setUserId(userId);
+
         return expenseRepository.save(newExpense);
     }
 
+    // Get expense by ID
     public Expense getExpenseById(Long id) {
-        return expenseRepository.findById(id)
+
+        Long userId = currentUserService.getCurrentUserId();
+
+        return expenseRepository.findByIdAndUserId(id, userId)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Expense not found with ID: " + id
                 ));
     }
 
+    // Get all expenses
     public List<Expense> getAllExpenses() {
-        return expenseRepository.findAll();
+
+        Long userId = currentUserService.getCurrentUserId();
+
+        return expenseRepository.findByUserId(userId);
     }
 
+    // Update expense
     public Expense updateExpense(Long id, Expense modifyExpense) {
 
-        Expense existingExpense = expenseRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Expense not found with ID: " + id
-                ));
+        Expense existingExpense = getExpenseById(id);
 
         existingExpense.setTitle(modifyExpense.getTitle());
         existingExpense.setAmount(modifyExpense.getAmount());
@@ -44,12 +59,10 @@ public class ExpenseService {
         return expenseRepository.save(existingExpense);
     }
 
+    // Delete expense
     public void deleteExpense(Long id) {
 
-        Expense existingExpense = expenseRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Expense not found with ID: " + id
-                ));
+        Expense existingExpense = getExpenseById(id);
 
         expenseRepository.delete(existingExpense);
     }

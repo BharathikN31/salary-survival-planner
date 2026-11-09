@@ -35,7 +35,7 @@ public class FinancialRecommendationService {
                 new ArrayList<>();
 
         FinancialSummary summary =
-                financialSummaryService.getFinancialSummary(userId);
+                financialSummaryService.getFinancialSummary();
 
         List<OverspendingAlert> alerts =
                 overspendingAlertService.getOverspendingAlerts(userId);

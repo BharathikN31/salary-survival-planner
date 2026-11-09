@@ -1,12 +1,12 @@
 package com.salaryplanner.salary_survival_planner.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-import lombok.Data;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
+import lombok.Data;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -17,8 +17,8 @@ public class Expense {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private  Long id;
-    @NotNull(message = "User ID is required")
+    private Long id;
+
     private Long userId;
 
     @NotBlank(message = "Expense title is required")
@@ -34,7 +34,9 @@ public class Expense {
 
     @NotNull(message = "Expense date is required")
     private LocalDate expenseDate;
+
     private LocalDateTime createdAt;
+
     @PrePersist
     public void onCreate() {
         createdAt = LocalDateTime.now();

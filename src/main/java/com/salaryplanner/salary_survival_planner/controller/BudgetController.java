@@ -17,39 +17,55 @@ public class BudgetController {
     @Autowired
     private BudgetService budgetService;
 
+    // Add budget
     @PostMapping
-    public ResponseEntity<Budget> addBudget(@Valid @RequestBody Budget newBudget){
-        return  new ResponseEntity<>(budgetService.addBudget(newBudget), HttpStatus.CREATED);
+    public ResponseEntity<Budget> addBudget(
+            @Valid @RequestBody Budget newBudget) {
+
+        return new ResponseEntity<>(
+                budgetService.addBudget(newBudget),
+                HttpStatus.CREATED
+        );
     }
 
+    // Get budget by ID
     @GetMapping("/{id}")
-    public  ResponseEntity<Budget> getBudgetById(@PathVariable Long id){
-        Budget findBudget=budgetService.getBudgetById(id);
+    public ResponseEntity<Budget> getBudgetById(@PathVariable Long id) {
 
-        if(findBudget!=null){
-            return new ResponseEntity<>(findBudget,HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(
+                budgetService.getBudgetById(id),
+                HttpStatus.OK
+        );
     }
 
+    // Get all budgets
     @GetMapping
-    public ResponseEntity<List<Budget>> getAllBudgets(){
-        return new ResponseEntity<>(budgetService.getAllBudgets(),HttpStatus.OK);
+    public ResponseEntity<List<Budget>> getAllBudgets() {
+
+        return new ResponseEntity<>(
+                budgetService.getAllBudgets(),
+                HttpStatus.OK
+        );
     }
 
+    // Delete budget
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteBudget(@PathVariable Long id){
+    public ResponseEntity<Void> deleteBudget(@PathVariable Long id) {
+
         budgetService.deleteBudget(id);
-        return  new ResponseEntity<>(HttpStatus.NO_CONTENT);
+
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    // Update budget
     @PutMapping("/{id}")
-    public ResponseEntity<Budget> updateBudget(@PathVariable Long id,@Valid @RequestBody Budget updateBudget){
-        Budget existingBudget =budgetService.getBudgetById(id);
-        if(existingBudget !=null){
-            return new ResponseEntity<>(budgetService.updateBudget(id,updateBudget),HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
+    public ResponseEntity<Budget> updateBudget(
+            @PathVariable Long id,
+            @Valid @RequestBody Budget updateBudget) {
 
+        return new ResponseEntity<>(
+                budgetService.updateBudget(id, updateBudget),
+                HttpStatus.OK
+        );
+    }
 }
