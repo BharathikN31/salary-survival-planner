@@ -1,3 +1,4 @@
+
 package com.salaryplanner.salary_survival_planner.service;
 
 import com.salaryplanner.salary_survival_planner.dto.PaymentReminder;
@@ -18,8 +19,15 @@ public class PaymentReminderService {
     @Autowired
     private FinancialCommitmentRepository commitmentRepository;
 
-    public List<PaymentReminder> getPaymentReminders(Long userId) {
+    @Autowired
+    private CurrentUserService currentUserService;
 
+    public List<PaymentReminder> getPaymentReminders() {
+
+        // Get authenticated user's ID from JWT
+        Long userId = currentUserService.getCurrentUserId();
+
+        // Fetch only this user's commitments
         List<FinancialCommitment> commitments =
                 commitmentRepository.findByUserId(userId);
 

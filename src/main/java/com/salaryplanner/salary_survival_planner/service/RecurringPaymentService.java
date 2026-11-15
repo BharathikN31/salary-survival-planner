@@ -1,3 +1,4 @@
+
 package com.salaryplanner.salary_survival_planner.service;
 
 import com.salaryplanner.salary_survival_planner.dto.RecurringPayment;
@@ -18,7 +19,13 @@ public class RecurringPaymentService {
     @Autowired
     private FinancialCommitmentRepository commitmentRepository;
 
-    public List<RecurringPayment> getUpcomingRecurringPayments(Long userId) {
+    @Autowired
+    private CurrentUserService currentUserService;
+
+    public List<RecurringPayment> getUpcomingRecurringPayments() {
+
+        // Get logged-in user's ID from JWT
+        Long userId = currentUserService.getCurrentUserId();
 
         List<FinancialCommitment> commitments =
                 commitmentRepository.findByUserId(userId);

@@ -21,9 +21,11 @@ public class User {
 
     @NotBlank(message = "Email is required")
     @Email(message = "Enter a valid email address")
+    @Column(unique = true)
     private String email;
 
     @NotBlank(message = "Password is required")
+    @Column(nullable = false)
     @Size(min = 8, message = "Password must contain at least 8 characters")
     private String password;
     private LocalDateTime createdAt;

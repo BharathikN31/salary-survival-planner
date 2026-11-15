@@ -1,3 +1,4 @@
+
 package com.salaryplanner.salary_survival_planner.service;
 
 import com.salaryplanner.salary_survival_planner.dto.FinancialGoalPriority;
@@ -21,8 +22,15 @@ public class FinancialGoalPrioritizerService {
     @Autowired
     private SavingsGoalRepository savingsGoalRepository;
 
-    public List<FinancialGoalPriority> prioritizeGoals(Long userId) {
+    @Autowired
+    private CurrentUserService currentUserService;
 
+    public List<FinancialGoalPriority> prioritizeGoals() {
+
+        // Get authenticated user's ID from JWT
+        Long userId = currentUserService.getCurrentUserId();
+
+        // Fetch only this user's savings goals
         List<SavingsGoal> goals =
                 savingsGoalRepository.findByUserId(userId);
 
@@ -90,6 +98,7 @@ public class FinancialGoalPrioritizerService {
             priorities.add(priority);
         }
 
+        // Highest priority score first
         priorities.sort(
                 Comparator.comparingInt(
                         FinancialGoalPriority::getPriorityScore

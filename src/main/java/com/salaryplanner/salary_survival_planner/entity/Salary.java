@@ -21,9 +21,11 @@ public class Salary {
 
     @NotNull(message = "Salary amount is required")
     @Positive(message = "Salary amount must be greater than zero")
+    @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal amount;
 
     @NotNull(message = "Salary date is required")
+    @Column(nullable = false)
     private LocalDate salaryDate;
 
     private LocalDateTime createdAt;

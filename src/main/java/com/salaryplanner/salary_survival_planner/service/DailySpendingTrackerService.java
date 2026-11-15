@@ -1,3 +1,4 @@
+
 package com.salaryplanner.salary_survival_planner.service;
 
 import com.salaryplanner.salary_survival_planner.dto.DailySpendingSummary;
@@ -20,20 +21,29 @@ public class DailySpendingTrackerService {
     @Autowired
     private FinancialSummaryService financialSummaryService;
 
-    public DailySpendingSummary getDailySpendingSummary(
-            Long userId, LocalDate spendingDate) {
+    @Autowired
+    private CurrentUserService currentUserService;
 
+    public DailySpendingSummary getDailySpendingSummary(
+            LocalDate spendingDate) {
+
+        // Get authenticated user's ID from JWT
+        Long userId = currentUserService.getCurrentUserId();
+
+        // Fetch only this user's expenses
         List<Expense> expenses =
                 expenseRepository.findByUserId(userId);
 
         BigDecimal totalSpent = BigDecimal.ZERO;
 
+        // Calculate expenses for the requested date
         for (Expense expense : expenses) {
             if (spendingDate.equals(expense.getExpenseDate())) {
                 totalSpent = totalSpent.add(expense.getAmount());
             }
         }
 
+        // Get the authenticated user's safe daily limit
         BigDecimal safeDailyLimit =
                 financialSummaryService.getFinancialSummary()
                         .getSafeDailyLimit();
@@ -50,12 +60,17 @@ public class DailySpendingTrackerService {
         String spendingStatus;
 
         if (remainingLimit.compareTo(BigDecimal.ZERO) < 0) {
+
             exceededAmount = remainingLimit.abs();
             remainingLimit = BigDecimal.ZERO;
             spendingStatus = "LIMIT EXCEEDED";
+
         } else if (totalSpent.compareTo(safeDailyLimit) == 0) {
+
             spendingStatus = "LIMIT REACHED";
+
         } else {
+
             spendingStatus = "WITHIN LIMIT";
         }
 

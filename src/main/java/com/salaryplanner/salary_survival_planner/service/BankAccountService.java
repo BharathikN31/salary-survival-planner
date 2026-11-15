@@ -1,3 +1,4 @@
+
 package com.salaryplanner.salary_survival_planner.service;
 
 import com.salaryplanner.salary_survival_planner.entity.BankAccount;
@@ -16,19 +17,35 @@ public class BankAccountService {
     @Autowired
     private BankAccountRepository bankAccountRepository;
 
+    @Autowired
+    private CurrentUserService currentUserService;
+
     // Add a bank account
     public BankAccount addAccount(BankAccount bankAccount) {
+
+        Long userId = currentUserService.getCurrentUserId();
+
+        bankAccount.setUserId(userId);
+        bankAccount.setId(null);
+
         return bankAccountRepository.save(bankAccount);
     }
 
-    // Get all accounts belonging to a user
-    public List<BankAccount> getAccountsByUserId(Long userId) {
+    // Get all accounts belonging to logged-in user
+    public List<BankAccount> getAccountsByUserId() {
+
+        Long userId = currentUserService.getCurrentUserId();
+
         return bankAccountRepository.findByUserId(userId);
     }
 
-    // Get a particular bank account
+    // Get an account only if it belongs to logged-in user
     public BankAccount getAccountById(Long accountId) {
-        return bankAccountRepository.findById(accountId)
+
+        Long userId = currentUserService.getCurrentUserId();
+
+        return bankAccountRepository
+                .findByIdAndUserId(accountId, userId)
                 .orElseThrow(() ->
                         new ResourceNotFoundException(
                                 "Bank account not found with ID: " + accountId
@@ -48,8 +65,10 @@ public class BankAccountService {
         return bankAccountRepository.save(bankAccount);
     }
 
-    // Calculate the total balance across a user's accounts
-    public BigDecimal getTotalBalance(Long userId) {
+    // Calculate total balance for logged-in user
+    public BigDecimal getTotalBalance() {
+
+        Long userId = currentUserService.getCurrentUserId();
 
         List<BankAccount> accounts =
                 bankAccountRepository.findByUserId(userId);
@@ -66,8 +85,7 @@ public class BankAccountService {
 
         return totalBalance;
     }
-
-    // Delete a bank account
+    // Delete only an account belonging to logged-in user
     public void deleteAccount(Long accountId) {
 
         BankAccount bankAccount = getAccountById(accountId);

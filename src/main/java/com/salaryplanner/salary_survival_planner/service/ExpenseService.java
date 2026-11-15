@@ -1,8 +1,10 @@
+
 package com.salaryplanner.salary_survival_planner.service;
 
 import com.salaryplanner.salary_survival_planner.entity.Expense;
 import com.salaryplanner.salary_survival_planner.exception.ResourceNotFoundException;
 import com.salaryplanner.salary_survival_planner.repository.ExpenseRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +24,10 @@ public class ExpenseService {
 
         Long userId = currentUserService.getCurrentUserId();
 
+        // Always create a new record
+        newExpense.setId(null);
+
+        // Assign authenticated user's ID
         newExpense.setUserId(userId);
 
         return expenseRepository.save(newExpense);

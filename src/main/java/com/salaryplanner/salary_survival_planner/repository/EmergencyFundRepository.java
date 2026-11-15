@@ -1,3 +1,4 @@
+
 package com.salaryplanner.salary_survival_planner.repository;
 
 import com.salaryplanner.salary_survival_planner.entity.EmergencyFund;

@@ -1,3 +1,4 @@
+
 package com.salaryplanner.salary_survival_planner.entity;
 
 import jakarta.persistence.*;
@@ -6,6 +7,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -19,8 +21,6 @@ public class InvestmentTransaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull(message = "User ID is required")
-    @Positive(message = "User ID must be positive")
     private Long userId;
 
     @NotNull(message = "Savings goal ID is required")
@@ -32,6 +32,7 @@ public class InvestmentTransaction {
 
     @NotNull(message = "Transaction amount is required")
     @Positive(message = "Transaction amount must be greater than zero")
+    @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal amount;
 
     @NotNull(message = "Transaction date is required")

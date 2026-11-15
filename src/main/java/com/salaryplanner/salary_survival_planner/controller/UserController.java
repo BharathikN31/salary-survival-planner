@@ -1,9 +1,11 @@
+
 package com.salaryplanner.salary_survival_planner.controller;
 
 import com.salaryplanner.salary_survival_planner.dto.RegisterRequest;
 import com.salaryplanner.salary_survival_planner.dto.UpdateUserRequest;
 import com.salaryplanner.salary_survival_planner.dto.UserResponse;
 import com.salaryplanner.salary_survival_planner.entity.User;
+import com.salaryplanner.salary_survival_planner.service.CurrentUserService;
 import com.salaryplanner.salary_survival_planner.service.UserService;
 
 import jakarta.validation.Valid;
@@ -11,9 +13,8 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
@@ -22,8 +23,13 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private CurrentUserService currentUserService;
+
     @GetMapping("/{id}")
     public ResponseEntity<UserResponse> getUserById(@PathVariable Long id) {
+
+        validateOwnership(id);
 
         User user = userService.getUserById(id);
 
@@ -32,21 +38,6 @@ public class UserController {
                 user.getName(),
                 user.getEmail()
         );
-
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-
-    @GetMapping
-    public ResponseEntity<List<UserResponse>> getAllUsers() {
-
-        List<UserResponse> response = userService.getAllUsers()
-                .stream()
-                .map(user -> new UserResponse(
-                        user.getId(),
-                        user.getName(),
-                        user.getEmail()
-                ))
-                .toList();
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -76,6 +67,8 @@ public class UserController {
             @PathVariable Long id,
             @Valid @RequestBody UpdateUserRequest request) {
 
+        validateOwnership(id);
+
         User modifiedUser = new User();
         modifiedUser.setName(request.getName());
 
@@ -93,8 +86,21 @@ public class UserController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
 
+        validateOwnership(id);
+
         userService.deleteUser(id);
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    private void validateOwnership(Long requestedUserId) {
+
+        Long loggedInUserId = currentUserService.getCurrentUserId();
+
+        if (!requestedUserId.equals(loggedInUserId)) {
+            throw new AccessDeniedException(
+                    "You are not authorized to access this user's data"
+            );
+        }
     }
 }

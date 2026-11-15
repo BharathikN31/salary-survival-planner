@@ -1,8 +1,11 @@
+
 package com.salaryplanner.salary_survival_planner.controller;
 
 import com.salaryplanner.salary_survival_planner.entity.Expense;
 import com.salaryplanner.salary_survival_planner.service.ExpenseService;
+
 import jakarta.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +33,8 @@ public class ExpenseController {
 
     // Get expense by ID
     @GetMapping("/{id}")
-    public ResponseEntity<Expense> getExpenseById(@PathVariable Long id) {
+    public ResponseEntity<Expense> getExpenseById(
+            @PathVariable Long id) {
 
         return new ResponseEntity<>(
                 expenseService.getExpenseById(id),
@@ -48,15 +52,6 @@ public class ExpenseController {
         );
     }
 
-    // Delete expense
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteExpense(@PathVariable Long id) {
-
-        expenseService.deleteExpense(id);
-
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
-
     // Update expense
     @PutMapping("/{id}")
     public ResponseEntity<Expense> updateExpense(
@@ -67,5 +62,15 @@ public class ExpenseController {
                 expenseService.updateExpense(id, updateExpense),
                 HttpStatus.OK
         );
+    }
+
+    // Delete expense
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteExpense(
+            @PathVariable Long id) {
+
+        expenseService.deleteExpense(id);
+
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

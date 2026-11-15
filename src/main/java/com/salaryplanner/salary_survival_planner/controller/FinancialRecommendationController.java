@@ -17,12 +17,11 @@ public class FinancialRecommendationController {
     private FinancialRecommendationService financialRecommendationService;
 
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<List<FinancialRecommendation>> getRecommendations(
-            @PathVariable Long userId) {
+    @GetMapping
+    public ResponseEntity<List<FinancialRecommendation>> getRecommendations() {
 
         List<FinancialRecommendation> recommendations =
-                financialRecommendationService.getRecommendations(userId);
+                financialRecommendationService.getRecommendations();
 
         return ResponseEntity.ok(recommendations);
     }

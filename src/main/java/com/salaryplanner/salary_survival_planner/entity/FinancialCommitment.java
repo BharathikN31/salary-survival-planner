@@ -20,16 +20,20 @@ public class FinancialCommitment {
 
     @NotBlank(message = "Commitment name is required")
     @Size(max = 100, message = "Name cannot exceed 100 characters")
+    @Column(nullable = false, length = 100)
     private String name;
 
     @NotNull(message = "Commitment amount is required")
     @Positive(message = "Commitment amount must be greater than zero")
+    @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal amount;
 
     @NotNull(message = "Due date is required")
+    @Column(nullable = false)
     private LocalDate dueDate;
 
     @NotNull(message = "Recurring status is required")
+    @Column(nullable = false)
     private Boolean recurring;
     private LocalDateTime createdAt;
     @PrePersist

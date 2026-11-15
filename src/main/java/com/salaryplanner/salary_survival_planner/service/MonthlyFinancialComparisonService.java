@@ -1,3 +1,4 @@
+
 package com.salaryplanner.salary_survival_planner.service;
 
 import com.salaryplanner.salary_survival_planner.dto.MonthlyFinancialComparison;
@@ -9,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,12 +28,17 @@ public class MonthlyFinancialComparisonService {
     @Autowired
     private SavingsGoalRepository savingsGoalRepository;
 
+    @Autowired
+    private CurrentUserService currentUserService;
+
     public List<MonthlyFinancialComparison> compareMonths(
-            Long userId,
             int previousMonth,
             int previousYear,
             int currentMonth,
             int currentYear) {
+
+        // Get authenticated user's ID from JWT
+        Long userId = currentUserService.getCurrentUserId();
 
         BigDecimal previousIncome = calculateSalary(
                 userId, previousMonth, previousYear);
@@ -93,7 +98,8 @@ public class MonthlyFinancialComparisonService {
 
         return commitmentRepository.findByUserId(userId)
                 .stream()
-                .filter(c -> c.getDueDate().getMonthValue() == month
+                .filter(c -> c.getDueDate() != null
+                        && c.getDueDate().getMonthValue() == month
                         && c.getDueDate().getYear() == year)
                 .map(c -> c.getAmount())
                 .reduce(BigDecimal.ZERO, BigDecimal::add);

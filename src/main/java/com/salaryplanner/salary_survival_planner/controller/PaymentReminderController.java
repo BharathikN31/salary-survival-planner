@@ -1,3 +1,4 @@
+
 package com.salaryplanner.salary_survival_planner.controller;
 
 import com.salaryplanner.salary_survival_planner.dto.PaymentReminder;
@@ -17,12 +18,11 @@ public class PaymentReminderController {
     @Autowired
     private PaymentReminderService paymentReminderService;
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<List<PaymentReminder>> getPaymentReminders(
-            @PathVariable Long userId) {
+    @GetMapping
+    public ResponseEntity<List<PaymentReminder>> getPaymentReminders() {
 
         List<PaymentReminder> reminders =
-                paymentReminderService.getPaymentReminders(userId);
+                paymentReminderService.getPaymentReminders();
 
         return new ResponseEntity<>(reminders, HttpStatus.OK);
     }

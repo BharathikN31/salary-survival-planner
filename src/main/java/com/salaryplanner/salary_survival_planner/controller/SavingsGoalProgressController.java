@@ -1,3 +1,4 @@
+
 package com.salaryplanner.salary_survival_planner.controller;
 
 import com.salaryplanner.salary_survival_planner.dto.SavingsGoalProgress;
@@ -17,12 +18,11 @@ public class SavingsGoalProgressController {
     @Autowired
     private SavingsGoalProgressService savingsGoalProgressService;
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<List<SavingsGoalProgress>> getSavingsGoalProgress(
-            @PathVariable Long userId) {
+    @GetMapping
+    public ResponseEntity<List<SavingsGoalProgress>> getSavingsGoalProgress() {
 
         List<SavingsGoalProgress> progress =
-                savingsGoalProgressService.getSavingsGoalProgress(userId);
+                savingsGoalProgressService.getSavingsGoalProgress();
 
         return new ResponseEntity<>(progress, HttpStatus.OK);
     }

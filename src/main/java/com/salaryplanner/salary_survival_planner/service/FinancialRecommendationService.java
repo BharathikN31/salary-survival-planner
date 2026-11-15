@@ -26,10 +26,17 @@ public class FinancialRecommendationService {
     private PaymentReminderService paymentReminderService;
 
     @Autowired
+    private CurrentUserService currentUserService;
+
+    @Autowired
     private FinancialHealthScoreService financialHealthScoreService;
 
 
-    public List<FinancialRecommendation> getRecommendations(Long userId) {
+    public List<FinancialRecommendation> getRecommendations() {
+
+        Long userId = currentUserService.getCurrentUserId();
+
+        // Keep your existing recommendation logic below
 
         List<FinancialRecommendation> recommendations =
                 new ArrayList<>();
@@ -38,13 +45,13 @@ public class FinancialRecommendationService {
                 financialSummaryService.getFinancialSummary();
 
         List<OverspendingAlert> alerts =
-                overspendingAlertService.getOverspendingAlerts(userId);
+                overspendingAlertService.getOverspendingAlerts();
 
         List<PaymentReminder> reminders =
-                paymentReminderService.getPaymentReminders(userId);
+                paymentReminderService.getPaymentReminders();
 
         FinancialHealthScore healthScore =
-                financialHealthScoreService.calculateHealthScore(userId);
+                financialHealthScoreService.calculateHealthScore();
 
 
         // Recommendation 1: Review overspending

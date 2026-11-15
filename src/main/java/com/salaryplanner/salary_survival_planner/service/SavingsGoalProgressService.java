@@ -1,3 +1,4 @@
+
 package com.salaryplanner.salary_survival_planner.service;
 
 import com.salaryplanner.salary_survival_planner.dto.SavingsGoalProgress;
@@ -18,8 +19,15 @@ public class SavingsGoalProgressService {
     @Autowired
     private SavingsGoalRepository savingsGoalRepository;
 
-    public List<SavingsGoalProgress> getSavingsGoalProgress(Long userId) {
+    @Autowired
+    private CurrentUserService currentUserService;
 
+    public List<SavingsGoalProgress> getSavingsGoalProgress() {
+
+        // Get authenticated user's ID from JWT
+        Long userId = currentUserService.getCurrentUserId();
+
+        // Fetch only this user's savings goals
         List<SavingsGoal> goals =
                 savingsGoalRepository.findByUserId(userId);
 

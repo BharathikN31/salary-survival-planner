@@ -1,10 +1,12 @@
+
 package com.salaryplanner.salary_survival_planner.controller;
 
 import com.salaryplanner.salary_survival_planner.dto.DailySpendingSummary;
 import com.salaryplanner.salary_survival_planner.service.DailySpendingTrackerService;
 
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,15 +19,16 @@ public class DailySpendingTrackerController {
     @Autowired
     private DailySpendingTrackerService dailySpendingTrackerService;
 
-    @GetMapping("/{userId}")
+    @GetMapping
     public ResponseEntity<DailySpendingSummary> getDailySpendingSummary(
-            @PathVariable Long userId,
-            @RequestParam LocalDate date) {
+            @RequestParam
+            @NotNull
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate date) {
 
         DailySpendingSummary summary =
-                dailySpendingTrackerService.getDailySpendingSummary(
-                        userId, date);
+                dailySpendingTrackerService.getDailySpendingSummary(date);
 
-        return new ResponseEntity<>(summary, HttpStatus.OK);
+        return ResponseEntity.ok(summary);
     }
 }

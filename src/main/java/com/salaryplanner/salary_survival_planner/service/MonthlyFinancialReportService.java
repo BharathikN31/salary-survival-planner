@@ -1,3 +1,4 @@
+
 package com.salaryplanner.salary_survival_planner.service;
 
 import com.salaryplanner.salary_survival_planner.dto.MonthlyFinancialReport;
@@ -30,8 +31,13 @@ public class MonthlyFinancialReportService {
     @Autowired
     private SavingsGoalRepository savingsGoalRepository;
 
-    public MonthlyFinancialReport generateMonthlyReport(
-            Long userId, int month, int year) {
+    @Autowired
+    private CurrentUserService currentUserService;
+
+    public MonthlyFinancialReport generateMonthlyReport(int month, int year) {
+
+        // Get logged-in user's ID from JWT
+        Long userId = currentUserService.getCurrentUserId();
 
         MonthlyFinancialReport report = new MonthlyFinancialReport();
 
@@ -49,8 +55,7 @@ public class MonthlyFinancialReportService {
         BigDecimal totalInvested = BigDecimal.ZERO;
         BigDecimal totalBudgetAllocated = BigDecimal.ZERO;
 
-        List<Salary> salaries =
-                salaryRepository.findByUserId(userId);
+        List<Salary> salaries = salaryRepository.findByUserId(userId);
 
         for (Salary salary : salaries) {
             if (!salary.getSalaryDate().isBefore(startDate)
@@ -70,8 +75,7 @@ public class MonthlyFinancialReportService {
             }
         }
 
-        List<Expense> expenses =
-                expenseRepository.findByUserId(userId);
+        List<Expense> expenses = expenseRepository.findByUserId(userId);
 
         for (Expense expense : expenses) {
             if (!expense.getExpenseDate().isBefore(startDate)
@@ -90,8 +94,7 @@ public class MonthlyFinancialReportService {
             }
         }
 
-        List<Budget> budgets =
-                budgetRepository.findByUserId(userId);
+        List<Budget> budgets = budgetRepository.findByUserId(userId);
 
         for (Budget budget : budgets) {
             if (!budget.getCreatedAt().toLocalDate().isAfter(endDate)) {

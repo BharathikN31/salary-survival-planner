@@ -1,3 +1,4 @@
+
 package com.salaryplanner.salary_survival_planner.service;
 
 import com.salaryplanner.salary_survival_planner.dto.FinancialHealthScore;
@@ -25,7 +26,13 @@ public class FinancialHealthScoreService {
     @Autowired
     private FinancialCommitmentRepository commitmentRepository;
 
-    public FinancialHealthScore calculateHealthScore(Long userId) {
+    @Autowired
+    private CurrentUserService currentUserService;
+
+    public FinancialHealthScore calculateHealthScore() {
+
+        // Get authenticated user's ID from JWT
+        Long userId = currentUserService.getCurrentUserId();
 
         LocalDate today = LocalDate.now();
 
@@ -156,24 +163,29 @@ public class FinancialHealthScoreService {
         List<String> suggestions = new ArrayList<>();
 
         if (income.compareTo(BigDecimal.ZERO) <= 0) {
-            suggestions.add("Add salary information for this month to calculate your financial health.");
+            suggestions.add(
+                    "Add salary information for this month to calculate your financial health.");
             return suggestions;
         }
 
         if (expenseRatio.compareTo(BigDecimal.valueOf(50)) > 0) {
-            suggestions.add("Your expenses are high. Try reducing unnecessary spending.");
+            suggestions.add(
+                    "Your expenses are high. Try reducing unnecessary spending.");
         }
 
         if (commitmentRatio.compareTo(BigDecimal.valueOf(40)) > 0) {
-            suggestions.add("Your financial commitments are high compared to your income.");
+            suggestions.add(
+                    "Your financial commitments are high compared to your income.");
         }
 
         if (savingsRatio.compareTo(BigDecimal.valueOf(20)) < 0) {
-            suggestions.add("Try to increase your monthly savings.");
+            suggestions.add(
+                    "Try to increase your monthly savings.");
         }
 
         if (suggestions.isEmpty()) {
-            suggestions.add("Good financial progress! Continue maintaining your spending and savings habits.");
+            suggestions.add(
+                    "Good financial progress! Continue maintaining your spending and savings habits.");
         }
 
         return suggestions;

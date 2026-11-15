@@ -1,3 +1,4 @@
+
 package com.salaryplanner.salary_survival_planner.service;
 
 import com.salaryplanner.salary_survival_planner.entity.User;
@@ -8,8 +9,6 @@ import com.salaryplanner.salary_survival_planner.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class UserService {
@@ -28,7 +27,8 @@ public class UserService {
             );
         }
 
-        String encodedPassword = passwordEncoder.encode(newUser.getPassword());
+        String encodedPassword =
+                passwordEncoder.encode(newUser.getPassword());
 
         newUser.setPassword(encodedPassword);
 
@@ -36,14 +36,11 @@ public class UserService {
     }
 
     public User getUserById(Long id) {
+
         return userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "User not found with ID: " + id
                 ));
-    }
-
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
     }
 
     public User updateUserName(Long id, User modifyUser) {

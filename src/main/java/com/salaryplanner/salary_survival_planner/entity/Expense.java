@@ -23,16 +23,22 @@ public class Expense {
 
     @NotBlank(message = "Expense title is required")
     @Size(max = 100, message = "Title cannot exceed 100 characters")
+    @Column(nullable = false, length = 100)
     private String title;
 
     @NotNull(message = "Expense amount is required")
     @Positive(message = "Expense amount must be greater than zero")
+    @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal amount;
 
+
     @NotBlank(message = "Category is required")
+    @Column(nullable = false)
+    @Size(max = 50, message = "Category cannot exceed 50 characters")
     private String category;
 
     @NotNull(message = "Expense date is required")
+    @Column(nullable = false)
     private LocalDate expenseDate;
 
     private LocalDateTime createdAt;

@@ -1,3 +1,4 @@
+
 package com.salaryplanner.salary_survival_planner.controller;
 
 import com.salaryplanner.salary_survival_planner.dto.MonthlyFinancialComparison;
@@ -5,6 +6,7 @@ import com.salaryplanner.salary_survival_planner.service.MonthlyFinancialCompari
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,21 +23,28 @@ public class MonthlyFinancialComparisonController {
     @Autowired
     private MonthlyFinancialComparisonService comparisonService;
 
-    @GetMapping("/{userId}")
+    @GetMapping
     public ResponseEntity<List<MonthlyFinancialComparison>> compareMonths(
-            @PathVariable Long userId,
-            @RequestParam int previousMonth,
-            @RequestParam @Min(2020) @Max(2100) int previousYear,
-            @RequestParam int currentMonth,
-            @RequestParam int currentYear) {
+
+            @RequestParam
+            @Min(1) @Max(12) int previousMonth,
+
+            @RequestParam
+            @Min(2020) @Max(2100) int previousYear,
+
+            @RequestParam
+            @Min(1) @Max(12) int currentMonth,
+
+            @RequestParam
+            @Min(2020) @Max(2100) int currentYear) {
 
         List<MonthlyFinancialComparison> comparisons =
                 comparisonService.compareMonths(
-                        userId,
                         previousMonth,
                         previousYear,
                         currentMonth,
-                        currentYear);
+                        currentYear
+                );
 
         return new ResponseEntity<>(comparisons, HttpStatus.OK);
     }

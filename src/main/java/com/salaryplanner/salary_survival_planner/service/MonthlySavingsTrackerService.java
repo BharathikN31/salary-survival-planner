@@ -1,8 +1,10 @@
+
 package com.salaryplanner.salary_survival_planner.service;
 
 import com.salaryplanner.salary_survival_planner.dto.MonthlySavingsSummary;
 import com.salaryplanner.salary_survival_planner.entity.MonthlySavingsTarget;
 import com.salaryplanner.salary_survival_planner.entity.InvestmentTransaction;
+
 import com.salaryplanner.salary_survival_planner.repository.MonthlySavingsTargetRepository;
 import com.salaryplanner.salary_survival_planner.repository.InvestmentTransactionRepository;
 
@@ -24,12 +26,20 @@ public class MonthlySavingsTrackerService {
     @Autowired
     private InvestmentTransactionRepository transactionRepository;
 
+    @Autowired
+    private CurrentUserService currentUserService;
 
-    public MonthlySavingsTarget saveTarget(MonthlySavingsTarget target) {
+    public MonthlySavingsTarget saveTarget(
+            MonthlySavingsTarget target) {
+
+        Long userId = currentUserService.getCurrentUserId();
+
+        // Always use the logged-in user's ID
+        target.setUserId(userId);
 
         Optional<MonthlySavingsTarget> existingTarget =
                 targetRepository.findByUserIdAndTargetYearAndTargetMonth(
-                        target.getUserId(),
+                        userId,
                         target.getTargetYear(),
                         target.getTargetMonth()
                 );
@@ -43,14 +53,17 @@ public class MonthlySavingsTrackerService {
             return targetRepository.save(savedTarget);
         }
 
+        // Prevent accidental updates through POST
+        target.setId(null);
+
         return targetRepository.save(target);
     }
 
-
     public MonthlySavingsSummary getMonthlySavingsSummary(
-            Long userId,
             int year,
             int month) {
+
+        Long userId = currentUserService.getCurrentUserId();
 
         MonthlySavingsSummary summary = new MonthlySavingsSummary();
 
@@ -74,6 +87,7 @@ public class MonthlySavingsTrackerService {
         }
 
         LocalDate startDate = LocalDate.of(year, month, 1);
+
         LocalDate endDate = startDate.withDayOfMonth(
                 startDate.lengthOfMonth()
         );
@@ -132,6 +146,7 @@ public class MonthlySavingsTrackerService {
 
             if (completionPercentage.compareTo(
                     BigDecimal.valueOf(100)) > 0) {
+
                 completionPercentage = BigDecimal.valueOf(100);
             }
         }
@@ -140,8 +155,10 @@ public class MonthlySavingsTrackerService {
 
         if (targetAmount.compareTo(BigDecimal.ZERO) <= 0) {
             status = "TARGET NOT SET";
+
         } else if (netSavings.compareTo(targetAmount) >= 0) {
             status = "TARGET ACHIEVED";
+
         } else {
             status = "IN PROGRESS";
         }

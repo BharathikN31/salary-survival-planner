@@ -1,12 +1,14 @@
+
 package com.salaryplanner.salary_survival_planner.service;
 
 import com.salaryplanner.salary_survival_planner.dto.EmergencyFundPlan;
+import com.salaryplanner.salary_survival_planner.dto.EmergencyFundRequest;
 import com.salaryplanner.salary_survival_planner.entity.EmergencyFund;
 import com.salaryplanner.salary_survival_planner.exception.ResourceNotFoundException;
 import com.salaryplanner.salary_survival_planner.repository.EmergencyFundRepository;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -17,23 +19,49 @@ public class EmergencyFundService {
     @Autowired
     private EmergencyFundRepository emergencyFundRepository;
 
-    public EmergencyFundPlan calculateEmergencyFund(Long userId) {
+    @Autowired
+    private CurrentUserService currentUserService;
+
+    @Transactional
+    public EmergencyFund saveEmergencyFund(EmergencyFundRequest request) {
+
+        Long userId = currentUserService.getCurrentUserId();
+
+        EmergencyFund fund = emergencyFundRepository.findByUserId(userId)
+                .orElseGet(EmergencyFund::new);
+
+        fund.setUserId(userId);
+        fund.setMonthlyEssentialExpenses(
+                request.getMonthlyEssentialExpenses());
+        fund.setTargetMonths(request.getTargetMonths());
+        fund.setCurrentSavings(request.getCurrentSavings());
+
+        return emergencyFundRepository.save(fund);
+    }
+
+    public EmergencyFundPlan calculateEmergencyFund() {
+
+        Long userId = currentUserService.getCurrentUserId();
 
         EmergencyFund fund = emergencyFundRepository.findByUserId(userId)
                 .orElseThrow(() ->
                         new ResourceNotFoundException(
-                                "Emergency fund details not found for user ID: "
-                                        + userId
+                                "Emergency fund details not found"
                         ));
 
-        BigDecimal monthlyExpenses = fund.getMonthlyEssentialExpenses();
-        BigDecimal currentSavings = fund.getCurrentSavings();
+        BigDecimal monthlyExpenses =
+                fund.getMonthlyEssentialExpenses();
+
+        BigDecimal currentSavings =
+                fund.getCurrentSavings();
+
         Integer targetMonths = fund.getTargetMonths();
 
         BigDecimal recommendedFund = monthlyExpenses.multiply(
                 BigDecimal.valueOf(targetMonths));
 
-        BigDecimal remainingAmount = recommendedFund.subtract(currentSavings);
+        BigDecimal remainingAmount =
+                recommendedFund.subtract(currentSavings);
 
         if (remainingAmount.compareTo(BigDecimal.ZERO) < 0) {
             remainingAmount = BigDecimal.ZERO;
@@ -42,11 +70,14 @@ public class EmergencyFundService {
         BigDecimal completionPercentage = BigDecimal.ZERO;
 
         if (recommendedFund.compareTo(BigDecimal.ZERO) > 0) {
+
             completionPercentage = currentSavings
                     .multiply(BigDecimal.valueOf(100))
                     .divide(recommendedFund, 2, RoundingMode.HALF_UP);
 
-            if (completionPercentage.compareTo(BigDecimal.valueOf(100)) > 0) {
+            if (completionPercentage.compareTo(
+                    BigDecimal.valueOf(100)) > 0) {
+
                 completionPercentage = BigDecimal.valueOf(100);
             }
         }
@@ -71,9 +102,5 @@ public class EmergencyFundService {
         plan.setFundStatus(fundStatus);
 
         return plan;
-    }
-
-    public EmergencyFund saveEmergencyFund(EmergencyFund fund) {
-        return emergencyFundRepository.save(fund);
     }
 }

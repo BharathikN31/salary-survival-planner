@@ -1,3 +1,4 @@
+
 package com.salaryplanner.salary_survival_planner.controller;
 
 import com.salaryplanner.salary_survival_planner.dto.FinancialHealthScore;
@@ -15,12 +16,11 @@ public class FinancialHealthScoreController {
     @Autowired
     private FinancialHealthScoreService financialHealthScoreService;
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<FinancialHealthScore> getFinancialHealthScore(
-            @PathVariable Long userId) {
+    @GetMapping
+    public ResponseEntity<FinancialHealthScore> getFinancialHealthScore() {
 
         FinancialHealthScore result =
-                financialHealthScoreService.calculateHealthScore(userId);
+                financialHealthScoreService.calculateHealthScore();
 
         return new ResponseEntity<>(result, HttpStatus.OK);
     }

@@ -1,3 +1,4 @@
+
 package com.salaryplanner.salary_survival_planner.service;
 
 import com.salaryplanner.salary_survival_planner.dto.FinancialDashboard;
@@ -5,6 +6,7 @@ import com.salaryplanner.salary_survival_planner.dto.FinancialSummary;
 import com.salaryplanner.salary_survival_planner.dto.SavingsGoalProgress;
 import com.salaryplanner.salary_survival_planner.dto.OverspendingAlert;
 import com.salaryplanner.salary_survival_planner.dto.PaymentReminder;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +31,12 @@ public class FinancialDashboardService {
     @Autowired
     private BankAccountService bankAccountService;
 
-    public FinancialDashboard getDashboard(Long userId) {
+    @Autowired
+    private CurrentUserService currentUserService;
+
+    public FinancialDashboard getDashboard() {
+
+        Long userId = currentUserService.getCurrentUserId();
 
         FinancialDashboard dashboard = new FinancialDashboard();
 
@@ -39,13 +46,13 @@ public class FinancialDashboardService {
                 financialSummaryService.getFinancialSummary();
 
         List<SavingsGoalProgress> savingsGoals =
-                savingsGoalProgressService.getSavingsGoalProgress(userId);
+                savingsGoalProgressService.getSavingsGoalProgress();
 
         List<OverspendingAlert> alerts =
-                overspendingAlertService.getOverspendingAlerts(userId);
+                overspendingAlertService.getOverspendingAlerts();
 
         List<PaymentReminder> reminders =
-                paymentReminderService.getPaymentReminders(userId);
+                paymentReminderService.getPaymentReminders();
 
         dashboard.setFinancialSummary(summary);
         dashboard.setSavingsGoals(savingsGoals);
@@ -53,9 +60,10 @@ public class FinancialDashboardService {
         dashboard.setPaymentReminders(reminders);
 
         BigDecimal totalBankBalance =
-                bankAccountService.getTotalBalance(userId);
+                bankAccountService.getTotalBalance();
 
         dashboard.setTotalBankBalance(totalBankBalance);
+
         return dashboard;
     }
 }

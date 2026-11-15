@@ -1,3 +1,4 @@
+
 package com.salaryplanner.salary_survival_planner.service;
 
 import com.salaryplanner.salary_survival_planner.dto.SalaryCyclePlan;
@@ -24,8 +25,14 @@ public class SalaryCyclePlannerService {
     @Autowired
     private FinancialCommitmentRepository commitmentRepository;
 
+    @Autowired
+    private CurrentUserService currentUserService;
+
     public SalaryCyclePlan createSalaryCyclePlan(
-            Long userId, BigDecimal plannedSavings) {
+            BigDecimal plannedSavings) {
+
+        // Get logged-in user's ID from JWT
+        Long userId = currentUserService.getCurrentUserId();
 
         List<Salary> salaries = salaryRepository.findByUserId(userId);
 

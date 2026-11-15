@@ -1,10 +1,13 @@
+
 package com.salaryplanner.salary_survival_planner.controller;
 
 import com.salaryplanner.salary_survival_planner.dto.EmergencyFundPlan;
+import com.salaryplanner.salary_survival_planner.dto.EmergencyFundRequest;
 import com.salaryplanner.salary_survival_planner.entity.EmergencyFund;
 import com.salaryplanner.salary_survival_planner.service.EmergencyFundService;
 
 import jakarta.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,20 +22,19 @@ public class EmergencyFundController {
 
     @PostMapping
     public ResponseEntity<EmergencyFund> saveEmergencyFund(
-            @Valid @RequestBody EmergencyFund fund) {
+            @Valid @RequestBody EmergencyFundRequest request) {
 
         EmergencyFund savedFund =
-                emergencyFundService.saveEmergencyFund(fund);
+                emergencyFundService.saveEmergencyFund(request);
 
         return new ResponseEntity<>(savedFund, HttpStatus.CREATED);
     }
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<EmergencyFundPlan> getEmergencyFundPlan(
-            @PathVariable Long userId) {
+    @GetMapping
+    public ResponseEntity<EmergencyFundPlan> getEmergencyFundPlan() {
 
         EmergencyFundPlan plan =
-                emergencyFundService.calculateEmergencyFund(userId);
+                emergencyFundService.calculateEmergencyFund();
 
         return new ResponseEntity<>(plan, HttpStatus.OK);
     }

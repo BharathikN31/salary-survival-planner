@@ -1,3 +1,4 @@
+
 package com.salaryplanner.salary_survival_planner.controller;
 
 import com.salaryplanner.salary_survival_planner.dto.FinancialDashboard;
@@ -14,13 +15,11 @@ public class FinancialDashboardController {
     @Autowired
     private FinancialDashboardService financialDashboardService;
 
-
-    @GetMapping("/{userId}")
-    public ResponseEntity<FinancialDashboard> getDashboard(
-            @PathVariable Long userId) {
+    @GetMapping
+    public ResponseEntity<FinancialDashboard> getDashboard() {
 
         FinancialDashboard dashboard =
-                financialDashboardService.getDashboard(userId);
+                financialDashboardService.getDashboard();
 
         return ResponseEntity.ok(dashboard);
     }

@@ -1,23 +1,28 @@
+
 package com.salaryplanner.salary_survival_planner.controller;
 
 import com.salaryplanner.salary_survival_planner.entity.BankAccount;
 import com.salaryplanner.salary_survival_planner.service.BankAccountService;
 import com.salaryplanner.salary_survival_planner.dto.BankBalanceUpdateRequest;
+
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/bank-accounts")
+@Validated
 public class BankAccountController {
 
     @Autowired
@@ -37,31 +42,24 @@ public class BankAccountController {
         );
     }
 
-    // Get all accounts for a user
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<BankAccount>> getAccountsByUserId(
-            @PathVariable Long userId) {
+    // Get all accounts belonging to logged-in user
+    @GetMapping
+    public ResponseEntity<List<BankAccount>> getAccounts() {
 
         List<BankAccount> accounts =
-                bankAccountService.getAccountsByUserId(userId);
+                bankAccountService.getAccountsByUserId();
 
         return ResponseEntity.ok(accounts);
     }
 
-    // Get one account
+    // Get one account belonging to logged-in user
     @ApiResponses(value = {
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "Bank account found"
-            ),
-            @ApiResponse(
-                    responseCode = "404",
-                    description = "Bank account not found"
-            ),
-            @ApiResponse(
-                    responseCode = "400",
-                    description = "Invalid account ID"
-            )
+            @ApiResponse(responseCode = "200",
+                    description = "Bank account found"),
+            @ApiResponse(responseCode = "404",
+                    description = "Bank account not found"),
+            @ApiResponse(responseCode = "400",
+                    description = "Invalid account ID")
     })
     @GetMapping("/{accountId}")
     public ResponseEntity<BankAccount> getAccountById(
@@ -73,7 +71,6 @@ public class BankAccountController {
                 bankAccountService.getAccountById(accountId);
 
         return ResponseEntity.ok(account);
-
     }
 
     // Update the recorded balance
@@ -91,18 +88,17 @@ public class BankAccountController {
         return ResponseEntity.ok(updatedAccount);
     }
 
-    // Get the total balance across all accounts for a user
-    @GetMapping("/user/{userId}/total")
-    public ResponseEntity<BigDecimal> getTotalBalance(
-            @PathVariable Long userId) {
+    // Get total balance for logged-in user
+    @GetMapping("/total")
+    public ResponseEntity<BigDecimal> getTotalBalance() {
 
         BigDecimal totalBalance =
-                bankAccountService.getTotalBalance(userId);
+                bankAccountService.getTotalBalance();
 
         return ResponseEntity.ok(totalBalance);
     }
 
-    // Delete an account
+    // Delete an account belonging to logged-in user
     @DeleteMapping("/{accountId}")
     public ResponseEntity<Void> deleteAccount(
             @PathVariable Long accountId) {

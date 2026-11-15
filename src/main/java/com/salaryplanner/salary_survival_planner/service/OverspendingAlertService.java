@@ -1,3 +1,4 @@
+
 package com.salaryplanner.salary_survival_planner.service;
 
 import com.salaryplanner.salary_survival_planner.dto.OverspendingAlert;
@@ -5,6 +6,7 @@ import com.salaryplanner.salary_survival_planner.entity.Budget;
 import com.salaryplanner.salary_survival_planner.entity.Expense;
 import com.salaryplanner.salary_survival_planner.repository.BudgetRepository;
 import com.salaryplanner.salary_survival_planner.repository.ExpenseRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +24,13 @@ public class OverspendingAlertService {
     @Autowired
     private ExpenseRepository expenseRepository;
 
-    public List<OverspendingAlert> getOverspendingAlerts(Long userId) {
+    @Autowired
+    private CurrentUserService currentUserService;
+
+    public List<OverspendingAlert> getOverspendingAlerts() {
+
+        // Get logged-in user's ID
+        Long userId = currentUserService.getCurrentUserId();
 
         List<Budget> budgets = budgetRepository.findByUserId(userId);
         List<Expense> expenses = expenseRepository.findByUserId(userId);

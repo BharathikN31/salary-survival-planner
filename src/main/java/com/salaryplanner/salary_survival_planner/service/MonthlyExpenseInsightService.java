@@ -1,3 +1,4 @@
+
 package com.salaryplanner.salary_survival_planner.service;
 
 import com.salaryplanner.salary_survival_planner.dto.MonthlyExpenseInsight;
@@ -20,9 +21,16 @@ public class MonthlyExpenseInsightService {
     @Autowired
     private ExpenseRepository expenseRepository;
 
-    public List<MonthlyExpenseInsight> getMonthlyExpenseInsights(
-            Long userId, int month, int year) {
+    @Autowired
+    private CurrentUserService currentUserService;
 
+    public List<MonthlyExpenseInsight> getMonthlyExpenseInsights(
+            int month, int year) {
+
+        // Get authenticated user's ID from JWT
+        Long userId = currentUserService.getCurrentUserId();
+
+        // Fetch only this user's expenses
         List<Expense> expenses =
                 expenseRepository.findByUserId(userId);
 

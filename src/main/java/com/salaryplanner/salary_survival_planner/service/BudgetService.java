@@ -1,12 +1,18 @@
+
 package com.salaryplanner.salary_survival_planner.service;
 
 import com.salaryplanner.salary_survival_planner.entity.Budget;
 import com.salaryplanner.salary_survival_planner.exception.ResourceNotFoundException;
 import com.salaryplanner.salary_survival_planner.repository.BudgetRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Locale;
 
 @Service
 public class BudgetService {
@@ -17,14 +23,38 @@ public class BudgetService {
     @Autowired
     private CurrentUserService currentUserService;
 
+    // Normalize category to avoid FOOD and food being treated differently
+    private String normalizeCategory(String category) {
+        return category.trim().toUpperCase(Locale.ROOT);
+    }
+
     // Add budget
     public Budget addBudget(Budget newBudget) {
 
         Long userId = currentUserService.getCurrentUserId();
 
+        newBudget.setId(null);
         newBudget.setUserId(userId);
 
-        return budgetRepository.save(newBudget);
+        String category = normalizeCategory(newBudget.getCategory());
+
+        if (budgetRepository.existsByUserIdAndCategory(userId, category)) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "A budget already exists for this category"
+            );
+        }
+
+        newBudget.setCategory(category);
+
+        try {
+            return budgetRepository.saveAndFlush(newBudget);
+        } catch (DataIntegrityViolationException ex) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "A budget already exists for this category"
+            );
+        }
     }
 
     // Get budget by ID
@@ -51,11 +81,34 @@ public class BudgetService {
 
         Budget existingBudget = getBudgetById(id);
 
+        Long userId = currentUserService.getCurrentUserId();
+
+        String category = normalizeCategory(modifyBudget.getCategory());
+
+        boolean duplicate = budgetRepository
+                .existsByUserIdAndCategoryAndIdNot(
+                        userId, category, id
+                );
+
+        if (duplicate) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "A budget already exists for this category"
+            );
+        }
+
         existingBudget.setName(modifyBudget.getName());
-        existingBudget.setCategory(modifyBudget.getCategory());
+        existingBudget.setCategory(category);
         existingBudget.setMonthlyLimit(modifyBudget.getMonthlyLimit());
 
-        return budgetRepository.save(existingBudget);
+        try {
+            return budgetRepository.saveAndFlush(existingBudget);
+        } catch (DataIntegrityViolationException ex) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "A budget already exists for this category"
+            );
+        }
     }
 
     // Delete budget
