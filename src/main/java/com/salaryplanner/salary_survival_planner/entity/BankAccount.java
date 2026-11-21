@@ -2,11 +2,12 @@
 package com.salaryplanner.salary_survival_planner.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
+
+import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -21,6 +22,7 @@ public class BankAccount {
     private Long id;
 
     // Assigned automatically from authenticated JWT
+    @Column(name = "user_id", nullable = false)
     private Long userId;
 
     @NotBlank(message = "Account name is required")

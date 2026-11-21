@@ -5,7 +5,6 @@ import com.salaryplanner.salary_survival_planner.entity.BankAccount;
 import com.salaryplanner.salary_survival_planner.exception.ResourceNotFoundException;
 import com.salaryplanner.salary_survival_planner.repository.BankAccountRepository;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -14,19 +13,27 @@ import java.util.List;
 @Service
 public class BankAccountService {
 
-    @Autowired
-    private BankAccountRepository bankAccountRepository;
+    private final BankAccountRepository bankAccountRepository;
+    private final CurrentUserService currentUserService;
 
-    @Autowired
-    private CurrentUserService currentUserService;
+    public BankAccountService(
+            BankAccountRepository bankAccountRepository,
+            CurrentUserService currentUserService) {
+
+        this.bankAccountRepository = bankAccountRepository;
+        this.currentUserService = currentUserService;
+    }
 
     // Add a bank account
     public BankAccount addAccount(BankAccount bankAccount) {
 
         Long userId = currentUserService.getCurrentUserId();
 
-        bankAccount.setUserId(userId);
+        // Prevent client-supplied ID
         bankAccount.setId(null);
+
+        // Assign authenticated user's ID
+        bankAccount.setUserId(userId);
 
         return bankAccountRepository.save(bankAccount);
     }
@@ -39,7 +46,7 @@ public class BankAccountService {
         return bankAccountRepository.findByUserId(userId);
     }
 
-    // Get an account only if it belongs to logged-in user
+    // Get account only if it belongs to logged-in user
     public BankAccount getAccountById(Long accountId) {
 
         Long userId = currentUserService.getCurrentUserId();
@@ -53,7 +60,7 @@ public class BankAccountService {
                 );
     }
 
-    // Update the manually recorded balance
+    // Update manually recorded balance
     public BankAccount updateBalance(
             Long accountId,
             BigDecimal currentBalance) {
@@ -68,10 +75,7 @@ public class BankAccountService {
     // Calculate total balance for logged-in user
     public BigDecimal getTotalBalance() {
 
-        Long userId = currentUserService.getCurrentUserId();
-
-        List<BankAccount> accounts =
-                bankAccountRepository.findByUserId(userId);
+        List<BankAccount> accounts = getAccountsByUserId();
 
         BigDecimal totalBalance = BigDecimal.ZERO;
 
@@ -85,6 +89,7 @@ public class BankAccountService {
 
         return totalBalance;
     }
+
     // Delete only an account belonging to logged-in user
     public void deleteAccount(Long accountId) {
 

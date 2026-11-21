@@ -11,7 +11,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -25,8 +24,11 @@ import java.util.List;
 @Validated
 public class BankAccountController {
 
-    @Autowired
-    private BankAccountService bankAccountService;
+    private final BankAccountService bankAccountService;
+
+    public BankAccountController(BankAccountService bankAccountService) {
+        this.bankAccountService = bankAccountService;
+    }
 
     // Add a bank account
     @PostMapping
@@ -36,20 +38,16 @@ public class BankAccountController {
         BankAccount savedAccount =
                 bankAccountService.addAccount(bankAccount);
 
-        return new ResponseEntity<>(
-                savedAccount,
-                HttpStatus.CREATED
-        );
+        return new ResponseEntity<>(savedAccount, HttpStatus.CREATED);
     }
 
     // Get all accounts belonging to logged-in user
     @GetMapping
     public ResponseEntity<List<BankAccount>> getAccounts() {
 
-        List<BankAccount> accounts =
-                bankAccountService.getAccountsByUserId();
-
-        return ResponseEntity.ok(accounts);
+        return ResponseEntity.ok(
+                bankAccountService.getAccountsByUserId()
+        );
     }
 
     // Get one account belonging to logged-in user
@@ -67,16 +65,17 @@ public class BankAccountController {
             @Positive(message = "Account ID must be positive")
             Long accountId) {
 
-        BankAccount account =
-                bankAccountService.getAccountById(accountId);
-
-        return ResponseEntity.ok(account);
+        return ResponseEntity.ok(
+                bankAccountService.getAccountById(accountId)
+        );
     }
 
     // Update the recorded balance
     @PutMapping("/{accountId}/balance")
     public ResponseEntity<BankAccount> updateBalance(
-            @PathVariable Long accountId,
+            @PathVariable
+            @Positive(message = "Account ID must be positive")
+            Long accountId,
             @Valid @RequestBody BankBalanceUpdateRequest request) {
 
         BankAccount updatedAccount =
@@ -92,16 +91,17 @@ public class BankAccountController {
     @GetMapping("/total")
     public ResponseEntity<BigDecimal> getTotalBalance() {
 
-        BigDecimal totalBalance =
-                bankAccountService.getTotalBalance();
-
-        return ResponseEntity.ok(totalBalance);
+        return ResponseEntity.ok(
+                bankAccountService.getTotalBalance()
+        );
     }
 
     // Delete an account belonging to logged-in user
     @DeleteMapping("/{accountId}")
     public ResponseEntity<Void> deleteAccount(
-            @PathVariable Long accountId) {
+            @PathVariable
+            @Positive(message = "Account ID must be positive")
+            Long accountId) {
 
         bankAccountService.deleteAccount(accountId);
 
